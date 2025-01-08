@@ -28,6 +28,8 @@ use DeferredUpdates;
 use MWException;
 use MWTimestamp;
 use Wikimedia\ScopedCallback;
+use MediaWiki\MediaWikiServices;
+
 
 // TODO(maddog) Go through the whole extension and make sure DB access is
 //              principled and compatible with a load-balanced/clustered setup.
