@@ -142,7 +142,7 @@ class Db {
    *          discourse_id, wiki_id, and wiki_username; otherwise, returns null.
    */
   public static function lookupDiscourseId( int $discourseId ) : ?object {
-    $dbw = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_MASTER );MASTER );
+    $dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_MASTER );
     $row = $dbr->selectRow(
       // tables
       [ 'dsc' => Schema::LINK_TABLE, 'u' => 'user' ],
