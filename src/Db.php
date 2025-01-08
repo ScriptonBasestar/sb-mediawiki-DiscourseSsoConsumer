@@ -80,7 +80,7 @@ class Db {
    */
   public static function ensureCurrentSchema() {
     // Ensure that the database's schema will work with this code.
-    $currentDbSchema = Schema::fetchSchemaVersion( wfGetDB( DB_REPLICA ) );
+    $currentDbSchema = Schema::fetchSchemaVersion( MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_REPLICA ) );
     if ( $currentDbSchema === null ) {
       throw new MWException(
           "DB does not have our schema at all.  " .
@@ -113,7 +113,7 @@ class Db {
    * @throws MWException if the lock could not be acquired.
    */
   public static function acquireLockOnDiscourseId( int $discourse_id ) : void {
-    $dbw = wfGetDB( DB_MASTER );
+    $dbw = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_MASTER );
     $key = self::LOCK_KEY_PREFIX . (string)($discourse_id);
     $lock = $dbw->getScopedLockAndFlush( $key, __METHOD__, self::LOCK_TIMEOUT );
 
@@ -142,7 +142,7 @@ class Db {
    *          discourse_id, wiki_id, and wiki_username; otherwise, returns null.
    */
   public static function lookupDiscourseId( int $discourseId ) : ?object {
-    $dbr = wfGetDB( DB_MASTER );
+    $dbw = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_MASTER );MASTER );
     $row = $dbr->selectRow(
       // tables
       [ 'dsc' => Schema::LINK_TABLE, 'u' => 'user' ],
@@ -181,7 +181,7 @@ class Db {
    * @return ?int the associated Discourse id if $wikiId is known, else null
    */
   public static function lookupDiscourseIdByWikiId( int $wikiId ) : ?int {
-    $dbr = wfGetDB( DB_MASTER );
+    $dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_MASTER );
     $row = $dbr->selectRow(
       // tables
       [ 'dsc' => Schema::LINK_TABLE ],
@@ -225,7 +225,7 @@ class Db {
     // TODO(maddog) What happens (and what should happen) if the email address
     //              is used by multiple wiki users?  (e.g., selectRow() is
     //              here returning only one of potentially multiple rows.)
-    $dbr = wfGetDB( DB_MASTER );
+    $dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_MASTER );
     $row = $dbr->selectRow(
       // tables
       [ 'u' => 'user' ],
@@ -267,7 +267,7 @@ class Db {
       Util::debug( 'Username is empty string, skipping.' );
       return null;
     }
-    $dbr = wfGetDB( DB_MASTER );
+    $dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_MASTER );
     $row = $dbr->selectRow(
       // tables
       [ 'u' => 'user' ],
@@ -311,7 +311,7 @@ class Db {
     : void {
     Util::debug(
       "Linking discourse-id '{$discourseId}' to wiki-id '{$wikiId}'." );
-    $dbw = wfGetDB( DB_MASTER );
+    $dbw = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_MASTER );
     $dbw->upsert(
       // table
       Schema::LINK_TABLE,
@@ -374,7 +374,7 @@ class Db {
     $discourseId = $userRecord->id;
     $jsonUserBlob = Util::encodeObjectAsJson( $userRecord );
 
-    $dbw = wfGetDB( DB_MASTER );
+    $dbw = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_MASTER );
     $dbw->upsert(
       // table
       Schema::USER_TABLE,
@@ -408,7 +408,7 @@ class Db {
   public static function fetchUserRecord( int $discourseId ) : ?object {
     Util::debug( "Fetching user record for discourse-id '{$discourseId}'" );
 
-    $dbr = wfGetDB( DB_MASTER );
+    $dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_MASTER );
     $row = $dbr->selectRow(
       // tables
       [ 'dsu' => Schema::USER_TABLE ],
@@ -456,7 +456,7 @@ class Db {
   public static function fetchUserRecordByWikiId( int $wikiId ) : ?object {
     Util::debug( "Fetching user record for wiki-id '{$wikiId}'" );
 
-    $dbr = wfGetDB( DB_REPLICA );
+    $dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_REPLICA );
     $row = $dbr->selectRow(
       // tables
       [ 'dsl' => Schema::LINK_TABLE,
