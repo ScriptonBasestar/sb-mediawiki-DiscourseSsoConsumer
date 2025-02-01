@@ -24,7 +24,7 @@
 
 
 -- Add the META table.
-CREATE TABLE /*_*/discourse_sso_consumer_meta (
+CREATE TABLE IF NOT EXISTS /*_*/discourse_sso_consumer_meta (
   m_key VARCHAR(255) NOT NULL,
   m_value TEXT NOT NULL,
   PRIMARY KEY(m_key)

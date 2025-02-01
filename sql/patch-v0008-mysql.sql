@@ -29,7 +29,7 @@ DELETE FROM /*_*/discourse_sso_consumer_meta
 
 
 -- Add _discourse_user table
-CREATE TABLE /*_*/discourse_sso_consumer_discourse_user (
+CREATE TABLE IF NOT EXISTS /*_*/discourse_sso_consumer_discourse_user (
   discourse_id INTEGER NOT NULL,
   user_json MEDIUMBLOB NOT NULL,
   last_update BINARY(14) NOT NULL,
